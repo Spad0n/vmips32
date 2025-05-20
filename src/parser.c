@@ -6,12 +6,12 @@
 //} Register_Type;
 
 typedef enum {
+    Unknown_Type = 0,
     R_Type,
     I_Type,
     J_Type,
     S_Type,
     Label_Type,
-    Unknown_Type,
 } Format;
 
 static Format format_type(Token_Type type) {
@@ -79,8 +79,13 @@ static uint32_t get_address(Token addr) {
     return 0;
 }
 
+// TODO: verify all differents instructions parameters
 static uint32_t assemble_i_type(Token opcode, Token rt, Token rs, int16_t imm) {
-    return (get_opcode(opcode.type) << 26) | (get_register_number(rs.type) << 21) | (get_register_number(rt.type) << 16) | imm;
+    if (opcode.type == T_BNE) {
+        return (get_opcode(opcode.type) << 26) | (get_register_number(rt.type) << 21) | (get_register_number(rs.type) << 16) | (0xFFFF & imm);
+    } else {
+        return (get_opcode(opcode.type) << 26) | (get_register_number(rs.type) << 21) | (get_register_number(rt.type) << 16) | (0xFFFF & imm);
+    }
 }
 
 static uint32_t assemble_r_type(Token funct, Token rd, Token rs, Token rt) {
@@ -113,14 +118,14 @@ bool parser_parse_next_token_with_predicate(Token *token, Arena *arena, Parser *
     return predicate(arena, parser, *token);
 }
 
-bool parser_parse_immediate(int16_t *imm, Arena *arena, Parser *parser, Lexer *lexer) {
+bool parser_parse_immediate(int16_t *imm, uint32_t address, Arena *arena, Parser *parser, Lexer *lexer) {
     Token token = parser_parse_next_token(arena, parser, lexer);
     if (parser->failed) return false;
     switch (token.type) {
     case T_CALL_LABEL:
         for (size_t i = 0; i < parser->tds.count; i++) {
             if (sv_eq(token.text, parser->tds.items[i].name)) {
-                *imm = parser->tds.items[i].address;
+                *imm = (parser->tds.items[i].address - address) / 4;
                 return true;
             }
         }
@@ -166,7 +171,7 @@ bool parser_parse_expect(Arena *arena, Parser *parser, Lexer *lexer, Token_Type 
 Parser parser_first_pass(Arena *arena, Lexer *lexer) {
     Parser parser = {0};
     Token token = {0};
-    int16_t address = 0;
+    uint32_t address = 0x00400000;
     while (token.type != T_ENDOF) {
         token = lexer_next_token(lexer);
         switch (format_type(token.type)) {
@@ -175,14 +180,14 @@ Parser parser_first_pass(Arena *arena, Lexer *lexer) {
             for (size_t i = 0; i < 5; i++) {
                 lexer_next_token(lexer);
             }
-            address += 1;
+            address += 4;
             break;
         case J_Type:
             lexer_next_token(lexer);
-            address += 1;
+            address += 4;
             break;
         case S_Type:
-            address += 1;
+            address += 4;
             break;
         case Label_Type: {
             Symbol symbol = {
@@ -207,6 +212,7 @@ Parser parser_second_pass(Arena *arena, Lexer *lexer) {
     if (parser.failed) return parser;
 
     Token token = {0};
+    uint32_t address = 0x00400000;
     while (token.type != T_ENDOF) {
         token = lexer_next_token(lexer);
 
@@ -218,7 +224,13 @@ Parser parser_second_pass(Arena *arena, Lexer *lexer) {
             if (!parser_parse_next_token_with_predicate(&rs, arena, &parser, lexer, is_type_register)) return parser;
             if (!parser_parse_expect(arena, &parser, lexer, T_COMMA)) return parser;
             if (!parser_parse_next_token_with_predicate(&rt, arena, &parser, lexer, is_type_register)) return parser;
-            arena_da_append(arena, &parser.segments, assemble_r_type(token, rd, rs, rt));
+            Instruction instr = {
+                .instruction = assemble_r_type(token, rd, rs, rt),
+                .address     = address,
+            };
+            //arena_da_append(arena, &parser.segments, assemble_r_type(token, rd, rs, rt));
+            arena_da_append(arena, &parser.segments, instr);
+            address += 4;
         } break;
         case I_Type: {
             Token rt, rs;
@@ -227,16 +239,34 @@ Parser parser_second_pass(Arena *arena, Lexer *lexer) {
             if (!parser_parse_expect(arena, &parser, lexer, T_COMMA)) return parser;
             if (!parser_parse_next_token_with_predicate(&rs, arena, &parser, lexer, is_type_register)) return parser;
             if (!parser_parse_expect(arena, &parser, lexer, T_COMMA)) return parser;
-            if (!parser_parse_immediate(&imm, arena, &parser, lexer)) return parser;
-            arena_da_append(arena, &parser.segments, assemble_i_type(token, rt, rs, imm));
+            if (!parser_parse_immediate(&imm, address + 4, arena, &parser, lexer)) return parser;
+            // TODO: maybe do some condition
+            Instruction instr = {
+                .instruction = assemble_i_type(token, rt, rs, imm),
+                .address     = address,
+            };
+            //arena_da_append(arena, &parser.segments, assemble_i_type(token, rt, rs, imm));
+            arena_da_append(arena, &parser.segments, instr);
+            address += 4;
         } break;
         case J_Type: {
             Token addr;
             if (!parser_parse_next_token_with_predicate(&addr, arena, &parser, lexer, is_type_label)) return parser;
-            arena_da_append(arena, &parser.segments, assemble_j_type(token, addr));
+            Instruction instr = {
+                .instruction = assemble_j_type(token, addr),
+                .address     = address,
+            };
+            //arena_da_append(arena, &parser.segments, assemble_j_type(token, addr));
+            arena_da_append(arena, &parser.segments, instr);
+            address += 4;
         } break;
         case S_Type: {
-            arena_da_append(arena, &parser.segments, get_opcode(token.type));
+            Instruction instr = {
+                .instruction = get_opcode(token.type),
+                .address     = address,
+            };
+            arena_da_append(arena, &parser.segments, instr);
+            address += 4;
         } break;
         case Label_Type: break;
         case Unknown_Type:

@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
     }
     for (size_t i = 0; i < parser.segments.count; i++) {
         //printf("name: "SV_FMT", line: %d\n", SV_ARG(parser.tds.items[i].name), parser.tds.items[i].address);
-        printf("inst: 0x%08X\n", parser.segments.items[i]);
+        printf("address: 0x%08X, inst: 0x%08X\n", parser.segments.items[i].address, parser.segments.items[i].instruction);
     }
 
     //Parser parser = parser_parse(&arena, &lexer);

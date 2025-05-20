@@ -2,5 +2,6 @@ nob.old
 nob.old
 *.asm
 *.mips
+*.bin
 main
 nob

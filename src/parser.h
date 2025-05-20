@@ -21,14 +21,19 @@ typedef struct {
 } TDS;
 
 typedef struct {
-    uint32_t *items;
+    uint32_t instruction;
+    uint32_t address;
+} Instruction;
+
+typedef struct {
+    Instruction *items;
     size_t count;
     size_t capacity;
-} Instructions;
+} Segments;
 
 typedef struct {
     TDS tds;
-    Instructions segments;
+    Segments segments;
     bool failed;
     String error_message;
 } Parser;
