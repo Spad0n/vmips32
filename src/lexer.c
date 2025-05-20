@@ -29,8 +29,8 @@ static inline int is_int16(int ch) {
 const char *lexer_token_type_to_cstr(Token_Type type) {
     switch (type) {
     #define SYMBOL(ENUM, NAME)                  case CAT(T_, ENUM): return NAME;
-    #define KEYWORD(ENUM, NAME, FORMAT, OPCODE) case CAT(T_, ENUM): return NAME;
-    #define EXTRAKEYWORD(ENUM, NAME)            case CAT(T_, ENUM): return NAME;
+    #define INSTRUCTION(ENUM, NAME, FORMAT, OPCODE) case CAT(T_, ENUM): return NAME;
+    #define PSEUDOINSTRUCTION(ENUM, NAME)            case CAT(T_, ENUM): return NAME;
     #define REGISTER(ENUM, NAME, NUMBER)        case CAT(T_, ENUM): return NAME;
     #define DIRECTIVE(ENUM, NAME)               case CAT(T_, ENUM): return NAME;
     #include "lexer.inl"
@@ -90,8 +90,8 @@ Token lexer_next_token(Lexer *lexer) {
     };
     
     Literal_Token keywords[] = {
-        #define KEYWORD(ENUM, NAME, FORMAT, OPCODE) { .text = SV_STATIC(NAME), .type = CAT(T_, ENUM) },
-        #define EXTRAKEYWORD(ENUM, NAME)            { .text = SV_STATIC(NAME), .type = CAT(T_, ENUM) },
+        #define INSTRUCTION(ENUM, NAME, FORMAT, OPCODE) { .text = SV_STATIC(NAME), .type = CAT(T_, ENUM) },
+        #define PSEUDOINSTRUCTION(ENUM, NAME)            { .text = SV_STATIC(NAME), .type = CAT(T_, ENUM) },
         #include "lexer.inl"
     };
 

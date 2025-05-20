@@ -2,12 +2,12 @@
 #define SYMBOL(...)
 #endif
 
-#ifndef KEYWORD
-#define KEYWORD(...)
+#ifndef INSTRUCTION
+#define INSTRUCTION(...)
 #endif
 
-#ifndef EXTRAKEYWORD
-#define EXTRAKEYWORD(...)
+#ifndef PSEUDOINSTRUCTION
+#define PSEUDOINSTRUCTION(...)
 #endif
 
 #ifndef REGISTER
@@ -31,28 +31,28 @@ SYMBOL(ENDOF,           "<eof>")
 SYMBOL(INT16,           "<int16>")
 
 // Add/substract (R-type)
-KEYWORD(ADD,     "add",     R_Type, 0x20)
-KEYWORD(ADDU,    "addu",    R_Type, 0x21)
-KEYWORD(SUB,     "sub",     R_Type, 0x22)
-KEYWORD(SUBU,    "subu",    R_Type, 0x23)
-KEYWORD(SLT,     "slt",     R_Type, 0x2A)
+INSTRUCTION(ADD,     "add",     R_Type, 0x20)
+INSTRUCTION(ADDU,    "addu",    R_Type, 0x21)
+INSTRUCTION(SUB,     "sub",     R_Type, 0x22)
+INSTRUCTION(SUBU,    "subu",    R_Type, 0x23)
+INSTRUCTION(SLT,     "slt",     R_Type, 0x2A)
 
 // Add/substract (I-type)
-KEYWORD(ADDI,    "addi",    I_Type, 0x8)
-KEYWORD(ADDIU,   "addiu",   I_Type, 0x9)
-KEYWORD(BNE,     "bne",     I_Type, 0x5)
+INSTRUCTION(ADDI,    "addi",    I_Type, 0x8)
+INSTRUCTION(ADDIU,   "addiu",   I_Type, 0x9)
+INSTRUCTION(BNE,     "bne",     I_Type, 0x5)
 
 // Unconditional jumps (J-type)
-KEYWORD(J,       "j",       J_Type, 0x2)
-KEYWORD(JAL,     "jal",     J_Type, 0x3)
+INSTRUCTION(J,       "j",       J_Type, 0x2)
+INSTRUCTION(JAL,     "jal",     J_Type, 0x3)
 
 // Special instructions
-KEYWORD(SYSCALL, "syscall", S_Type, 0xC)
+INSTRUCTION(SYSCALL, "syscall", S_Type, 0xC)
 
-EXTRAKEYWORD(move,  "move")
-EXTRAKEYWORD(clear, "clear")
-EXTRAKEYWORD(li,    "li")
-EXTRAKEYWORD(la,    "la")
+PSEUDOINSTRUCTION(move,  "move")
+PSEUDOINSTRUCTION(clear, "clear")
+PSEUDOINSTRUCTION(li,    "li")
+PSEUDOINSTRUCTION(la,    "la")
 
 // Registers (standard MIPS names)
 REGISTER(ZERO,  "$zero", 0)
@@ -106,7 +106,7 @@ DIRECTIVE(MACRO,   ".macro")
 DIRECTIVE(NOMACRO, ".nomacro")
 
 #undef SYMBOL
-#undef KEYWORD
-#undef EXTRAKEYWORD
+#undef INSTRUCTION
+#undef PSEUDOINSTRUCTION
 #undef REGISTER
 #undef DIRECTIVE

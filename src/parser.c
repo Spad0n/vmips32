@@ -16,7 +16,7 @@ typedef enum {
 
 static Format format_type(Token_Type type) {
     switch (type) {
-    #define KEYWORD(ENUM, NAME, FORMAT, OPCODE) case CAT(T_, ENUM): return FORMAT;
+    #define INSTRUCTION(ENUM, NAME, FORMAT, OPCODE) case CAT(T_, ENUM): return FORMAT;
     #include "lexer.inl"
     case T_LABEL: return Label_Type;
     default: return Unknown_Type;
@@ -51,7 +51,7 @@ static bool is_type_label(Arena *arena, Parser *parser, Token token) {
 
 static int get_opcode(Token_Type type) {
     switch (type) {
-    #define KEYWORD(ENUM, NAME, TYPE, OPCODE) case CAT(T_, ENUM): return OPCODE;
+    #define INSTRUCTION(ENUM, NAME, TYPE, OPCODE) case CAT(T_, ENUM): return OPCODE;
     #include "lexer.inl"
     default:
         fprintf(stderr, "this keyword have no opcode: %s\n", lexer_token_type_to_cstr(type));

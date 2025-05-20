@@ -4,11 +4,6 @@
 #include "lexer.h"
 #include "utils.h"
 
-//typedef struct {
-//    String_View name;
-//    uint32_t address;
-//} TDS;
-
 typedef struct {
     String_View name;
     uint32_t address;

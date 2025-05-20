@@ -18,7 +18,7 @@ enum REG_NAME {
 };
 
 enum OP_CODE {
-    #define KEYWORD(ENUM, NAME, TYPE, CODE) OP_##ENUM = CODE,
+    #define INSTRUCTION(ENUM, NAME, TYPE, CODE) OP_##ENUM = CODE,
     #include "lexer.inl"
 };
 
