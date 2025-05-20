@@ -23,7 +23,7 @@ static inline int is_directive_body(int ch) {
 }
 
 static inline int is_int16(int ch) {
-    return isalnum(ch) || ch == '-';
+    return isdigit(ch) || ch == '-';
 }
 
 const char *lexer_token_type_to_cstr(Token_Type type) {
