@@ -67,6 +67,8 @@ static void _execute_itype(MVM *vm, uint32_t instruction) {
         if (vm->regs[rs] != vm->regs[rt]) {
             vm->PC += (imm << 2);
         } return;
+    case OP_ORI:
+        vm->regs[rt] = vm->regs[rs] | imm; return;
     default:
         assert(0 && "Unknown instruction for itype");
     }
@@ -110,6 +112,7 @@ void mvm_execute_one(MVM *vm, uint32_t instruction) {
     case OP_ADDI:
     case OP_ADDIU:
     case OP_BNE:
+    case OP_ORI:
         _execute_itype(vm, instruction); break;
     case OP_J:
     case OP_JAL:

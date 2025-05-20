@@ -41,6 +41,7 @@ INSTRUCTION(SLT,     "slt",     R_Type, 0x2A)
 INSTRUCTION(ADDI,    "addi",    I_Type, 0x8)
 INSTRUCTION(ADDIU,   "addiu",   I_Type, 0x9)
 INSTRUCTION(BNE,     "bne",     I_Type, 0x5)
+INSTRUCTION(ORI,     "ori",     I_Type, 0xD)
 
 // Unconditional jumps (J-type)
 INSTRUCTION(J,       "j",       J_Type, 0x2)

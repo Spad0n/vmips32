@@ -272,7 +272,9 @@ Parser parser_second_pass(Arena *arena, Lexer *lexer) {
         case Unknown_Type:
         default:
             if (token.type == T_ENDOF) break;
-            assert(0 && "TODO");
+            fprintf(stderr, "not implemented: %s", lexer_token_type_to_cstr(token.type));
+            exit(1);
+            //assert(0 && "TODO");
         }
     }
 

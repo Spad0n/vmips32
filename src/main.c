@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
     //}
 
     MVM mvm = mvm_init();
-    while (mvm.PC < parser.segments.items[parser.segments.count - 1].address) {
+    while (mvm.PC <= parser.segments.items[parser.segments.count - 1].address) {
         size_t index = (mvm.PC - 0x00400000) / 4;
         mvm_execute_one(&mvm, parser.segments.items[index].instruction);
     }
