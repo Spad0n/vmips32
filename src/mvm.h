@@ -12,20 +12,24 @@ typedef struct {
     uint32_t memory[MEM_SIZE];
 } MVM;
 
-enum REG_NAME {
+typedef enum {
     #define REGISTER(ENUM, NAME, NUMBER) REG_##ENUM = NUMBER,
     #include "lexer.inl"
-};
+} REG_NAME;
 
-enum OP_CODE {
+typedef enum {
     #define INSTRUCTION(ENUM, NAME, TYPE, CODE) OP_##ENUM = CODE,
     #include "lexer.inl"
-};
+} OP_CODE;
 
-const char* mvm_get_opcode_name(enum OP_CODE opcode);
+const char* mvm_get_opcode_name(OP_CODE opcode);
 
-const char* mvm_get_reg_name(enum REG_NAME reg);
+const char* mvm_get_reg_name(REG_NAME reg);
+
+void mvm_execute_many(MVM *vm, uint32_t *instructions, size_t num_instructions);
 
 void mvm_execute_one(MVM *vm, uint32_t instruction);
+
+MVM mvm_init();
 
 #endif // MVM_H

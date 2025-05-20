@@ -4,11 +4,11 @@
 #include "utils.h"
 
 typedef enum {
-    #define SYMBOL(ENUM, NAME)           CAT(T_, ENUM),
-    #define INSTRUCTION(ENUM, NAME, FORMAT, OPCODE) CAT(T_, ENUM),
-    #define PSEUDOINSTRUCTION(ENUM, NAME)     CAT(T_, ENUM),
-    #define REGISTER(ENUM, NAME, NUMBER) CAT(T_, ENUM),
-    #define DIRECTIVE(ENUM, NAME)        CAT(T_, ENUM),
+    #define SYMBOL(ENUM, NAME)                    CAT(T_, ENUM),
+    #define INSTRUCTION(ENUM, NAME, TYPE, OPCODE) CAT(T_, ENUM),
+    #define PSEUDOINSTRUCTION(ENUM, NAME)         CAT(T_, ENUM),
+    #define REGISTER(ENUM, NAME, NUMBER)          CAT(T_, ENUM),
+    #define DIRECTIVE(ENUM, NAME)                 CAT(T_, ENUM),
     #include "lexer.inl"
 } Token_Type;
 

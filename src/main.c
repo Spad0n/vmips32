@@ -47,21 +47,20 @@ int main(int argc, char **argv) {
 
     Lexer lexer = lexer_from_sv(src_filepath, content);
 
-    //Token token = {0};
-    //while (token.type != T_ENDOF) {
-    //    token = lexer_next_token(&lexer);
-    //    printf("token: %s, string: "SV_FMT"\n", lexer_token_type_to_cstr(token.type), SV_ARG(token.text));
-    //}
-    //lexer_reset_lexer(&lexer);
-
     Parser parser = parser_second_pass(&arena, &lexer);
     if (parser.failed) {
         fprintf(stderr, STR_FMT, STR_ARG(&parser.error_message));
         exit(1);
     }
-    for (size_t i = 0; i < parser.segments.count; i++) {
-        //printf("name: "SV_FMT", line: %d\n", SV_ARG(parser.tds.items[i].name), parser.tds.items[i].address);
-        printf("address: 0x%08X, inst: 0x%08X\n", parser.segments.items[i].address, parser.segments.items[i].instruction);
+
+    //for (size_t i = 0; i < parser.segments.count; i++) {
+    //    printf("address: 0x%08X, inst: 0x%08X\n", parser.segments.items[i].address, parser.segments.items[i].instruction);
+    //}
+
+    MVM mvm = mvm_init();
+    while (mvm.PC < parser.segments.items[parser.segments.count - 1].address) {
+        size_t index = (mvm.PC - 0x00400000) / 4;
+        mvm_execute_one(&mvm, parser.segments.items[index].instruction);
     }
 
     //Parser parser = parser_parse(&arena, &lexer);
