@@ -47,15 +47,11 @@ int main(int argc, char **argv) {
 
     Lexer lexer = lexer_from_sv(src_filepath, content);
 
-    Parser parser = parser_second_pass(&arena, &lexer);
+    Parser parser = parser_parse(&arena, &lexer);
     if (parser.failed) {
         fprintf(stderr, STR_FMT, STR_ARG(&parser.error_message));
         exit(1);
     }
-
-    //for (size_t i = 0; i < parser.segments.count; i++) {
-    //    printf("address: 0x%08X, inst: 0x%08X\n", parser.segments.items[i].address, parser.segments.items[i].instruction);
-    //}
 
     MVM mvm = mvm_init();
     while (mvm.PC <= parser.segments.items[parser.segments.count - 1].address) {
